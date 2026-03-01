@@ -1,5 +1,5 @@
 import csv, math
-# Matriz U → Afinidad usuarios x géneros 
+# Matriz U -> Afinidad usuarios x géneros 
 usuarios = []
 generos = []
 matriz_U = []
@@ -12,7 +12,7 @@ with open("afinidad_usuarios.csv", newline="", encoding="utf-8") as f:
         usuarios.append(row["Usuario"])
         matriz_U.append([int(row[g]) for g in generos])
 
-# Matriz G → Coincidencia géneros x películas 
+# Matriz G -> Coincidencia géneros x películas 
 peliculas = []
 generos_G = []
 matriz_G = []
@@ -134,7 +134,7 @@ def peliculas_populares_por_genero(top_n):
             peso_genero = matriz_G[j][k]
             puntaje = promedio_usuarios * peso_genero
             puntajes.append((k, puntaje))
-            
+
         puntajes = merge_sort_desc(puntajes)
 
         print(f"   Género: {genero}")

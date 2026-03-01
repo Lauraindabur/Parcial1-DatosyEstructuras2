@@ -52,17 +52,43 @@ for i in range(filas_U):
 
 
 # ───────────────────────Metodos para el menu───────────────────────────────────
+def merge_sort_desc(lista): # MERGE SORT para ordenar las mejores del top peliculas/generos de mayor a menor
+    if len(lista) <= 1:
+        return lista
+
+    mitad = len(lista) // 2
+    izquierda = merge_sort_desc(lista[:mitad])
+    derecha = merge_sort_desc(lista[mitad:])
+
+    return merge_desc(izquierda, derecha)
+
+
+def merge_desc(izquierda, derecha):
+    resultado = []
+    i = j = 0
+
+    while i < len(izquierda) and j < len(derecha):
+        if izquierda[i][1] > derecha[j][1]:  # ordenar por el segundo elemento
+            resultado.append(izquierda[i])
+            i += 1
+        else:
+            resultado.append(derecha[j])
+            j += 1
+
+    resultado.extend(izquierda[i:])
+    resultado.extend(derecha[j:])
+
+    return resultado
+# ─────────────────────────────────────────────────────────────────
 def mostrar_recomendaciones(indice_usuario, top_n):
     nombre   = usuarios[indice_usuario]
     puntajes = matriz_R[indice_usuario]
 
     pares = []
     for k in range(len(puntajes)):
-        pares.append([k, puntajes[k]])
-    for a in range(len(pares)):
-        for b in range(a + 1, len(pares)):
-            if pares[b][1] > pares[a][1]:
-                pares[a], pares[b] = pares[b], pares[a]
+        pares.append((k, puntajes[k]))
+
+    pares = merge_sort_desc(pares)
 
     print("\n Top " + str(top_n) + " recomendaciones para " + nombre + ":")
     print("  #    Pelicula                        Puntaje")
@@ -89,12 +115,7 @@ def usuarios_similares(nombre_buscar, top_n):
             continue
         sim = similitud_coseno(matriz_R[idx], matriz_R[j])
         similitudes.append((j, sim))
-
-    for a in range(len(similitudes)):
-        for b in range(a + 1, len(similitudes)):
-            if similitudes[b][1] > similitudes[a][1]:
-                similitudes[a], similitudes[b] = similitudes[b], similitudes[a]
-
+    similitudes = merge_sort_desc(similitudes)
 
     print(f"\n Usuarios más similares a {usuarios[idx]}:")
     print(f"  {'#':<4} {'Usuario':<15} {'Similitud':>10}")
@@ -113,19 +134,15 @@ def peliculas_populares_por_genero(top_n):
             peso_genero = matriz_G[j][k]
             puntaje = promedio_usuarios * peso_genero
             puntajes.append((k, puntaje))
-
-        for a in range(len(puntajes)):
-            for b in range(a + 1, len(puntajes)):
-                if puntajes[b][1] > puntajes[a][1]:
-                    puntajes[a], puntajes[b] = puntajes[b], puntajes[a]
+            
+        puntajes = merge_sort_desc(puntajes)
 
         print(f"   Género: {genero}")
-        print(f"  {'#':<4} {'Película':<30} {'Puntaje':>10}")  #Para organizar como se ve la tabla en la terminal
+        print(f"  {'#':<4} {'Película':<30} {'Puntaje':>10}")
         print(f"  {'-'*46}")
         for rank, (k, punt) in enumerate(puntajes[:top_n], 1):
             print(f"  {rank:<4} {peliculas[k]:<30} {round(punt, 2):>10}")
         print()
-
 # ─────────────────────main────────────────────────
 def main():
     print("SISTEMA DE RECOMENDACION DE PELICULAS")
